@@ -1,4 +1,3 @@
-
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
@@ -23,3 +22,4 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.TEXT);
   }
 }
+
