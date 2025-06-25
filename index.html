@@ -15,6 +15,7 @@
       border: 1px solid #ccc;
     }
     h2 { text-align: center; }
+    #message { text-align: center; font-weight: bold; color: green; }
   </style>
 </head>
 <body>
@@ -36,10 +37,12 @@
     <button type="submit">Submit Complaint</button>
   </form>
 
-  <p id="message" style="text-align:center; font-weight:bold;"></p>
+  <p id="message"></p>
 
   <script>
     const form = document.getElementById('complaintForm');
+    const message = document.getElementById('message');
+
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
 
@@ -49,18 +52,24 @@
         address: document.getElementById('address').value,
         complaintType: document.getElementById('complaintType').value,
         description: document.getElementById('description').value,
-        imageUrl: document.getElementById('imageUrl').value
+        imageUrl: document.getElementById('imageUrl').value || 'N/A'
       };
 
-      const res = await fetch('https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLieW8NBEYcAlNmupB4lxDnju-mKu6MBX4O7R47OXz6MdV5nIwjWHLJrpql82J2hEIwJMOETfCoMLEdOyKz5pEKi2Ii1bNjJFfB9yGAC5wxeZvcZknYaL2nxunotx7WSRdfViaL3orbdV-6eOFwStd5vuupYDgVr3pHr_A4HCgmsPJEeBjjojqvFad7HMsyyrqJZE8HTN4dB9MXF-9h2JCwHAMNAzkdFwKiMKfSjsYqqtB2c8e4acGtDBWOzbHt7iM-SXPV9_gVMpvpEdZxqE8HqNjl0_w&lib=MxJ-kVVwl8IoswLGmgxMaELU2UhZLtYfG', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
+      try {
+        const res = await fetch('https://script.google.com/macros/s/AKfycbyuvJAglU6TzU-dfkqnxFSu7XhY1HBQMU5hM4x0S8qe51g8RlpNG11X3MJq6m0Vul1f/exec', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
 
-      const msg = await res.text();
-      document.getElementById('message').innerText = msg;
-      form.reset();
+        const result = await res.text();
+        message.textContent = result;
+        form.reset();
+      } catch (error) {
+        message.textContent = 'Error submitting complaint. Try again.';
+        message.style.color = 'red';
+        console.error('Submission error:', error);
+      }
     });
   </script>
 </body>
