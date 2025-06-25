@@ -39,44 +39,40 @@
 
   <p id="message"></p>
 
-  <script>
-    const form = document.getElementById('complaintForm');
-    const message = document.getElementById('message');
+<script>
+  const form = document.getElementById('complaintForm');
+  const message = document.getElementById('message');
 
-    form.addEventListener('submit', async function (e) {
-      e.preventDefault();
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-      const data = {
-        fullName: document.getElementById('fullName').value,
-        contactNumber: document.getElementById('contactNumber').value,
-        address: document.getElementById('address').value,
-        complaintType: document.getElementById('complaintType').value,
-        description: document.getElementById('description').value,
-        imageUrl: document.getElementById('imageUrl').value || 'N/A'
-      };
+    const data = {
+      fullName: document.getElementById('fullName').value,
+      contactNumber: document.getElementById('contactNumber').value,
+      address: document.getElementById('address').value,
+      complaintType: document.getElementById('complaintType').value,
+      description: document.getElementById('description').value,
+      imageUrl: document.getElementById('imageUrl').value || 'N/A'
+    };
 
-      const corsProxy = 'https://corsproxy.io/?';
-      const scriptURL = 'https://script.google.com/macros/s/AKfycbyuvJAglU6TzU-dfkqnxFSu7XhY1HBQMU5hM4x0S8qe51g8RlpNG11X3MJq6m0Vul1f/exec';
+    try {
+      const res = await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
 
-      try {
-        const res = await fetch(corsProxy + encodeURIComponent(scriptURL), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
+      const text = await res.text();
+      message.style.color = 'green';
+      message.textContent = text;
+      form.reset();
+    } catch (err) {
+      console.error('Submission error:', err);
+      message.style.color = 'red';
+      message.textContent = '❌ Submission failed.';
+    }
+  });
+</script>
 
-        const text = await res.text();
-        message.style.color = 'green';
-        message.textContent = text;
-        form.reset();
-      } catch (err) {
-        console.error('Submission error:', err);
-        message.style.color = 'red';
-        message.textContent = '❌ Submission failed. CORS issue.';
-      }
-    });
-  </script>
 </body>
 </html>
